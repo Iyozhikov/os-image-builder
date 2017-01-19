@@ -1,0 +1,72 @@
+{
+  "variables": {
+    "iso": "/home/user/osbuilder/ubuntu-14.04.5-server-amd64.iso",
+    "iso_md5": "dd54dc8cfc2a655053d19813c2f9aa9f",
+    "deb_packages": "python-pip vim linux-image-4.4.0-59-generic linux-image-extra-4.4.0-59-generic cloud-init cloud-initramfs-growroot",
+    "disk_size": "6144",
+    "user": "mirantis",
+    "password": "mirantis"
+  },
+  "builders":
+  [
+    {
+      "vm_name": "ubuntu-14.04-x86_64-server",
+      "type": "qemu",
+      "format": "qcow2",
+      "accelerator": "kvm",
+      "disk_size": "{{ user `disk_size`}}",
+
+      "iso_url": "file://{{user `iso`}}",
+      "iso_checksum": "{{user `iso_md5`}}",
+      "iso_checksum_type": "md5",
+      "output_directory": "output-ubuntu-14.04-x86_64-{{build_type}}",
+      "http_directory": "http",
+      "headless": "true",
+
+      "boot_wait": "5s",
+      "qemuargs": [ "-serial", "file:serial.out" ],
+      "boot_command": [
+        "<esc><wait>",
+        "<esc><wait>",
+        "<enter><wait>",
+        "/install/vmlinuz",
+        " auto",
+        " console-setup/ask_detect=false",
+        " console-setup/layoutcode=us",
+        " console-setup/modelcode=pc105",
+        " debconf/frontend=noninteractive",
+        " debian-installer=en_US",
+        " fb=false",
+        " initrd=/install/initrd.gz",
+        " kbd-chooser/method=us",
+        " keyboard-configuration/layout=USA",
+        " keyboard-configuration/variant=USA",
+        " locale=en_US",
+        " netcfg/get_hostname=base",
+        " netcfg/get_domain=mirantis.local",
+        " netcfg/choose_interface=eth0",
+        " noapic",
+        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/u14preseed.cfg",
+        " -- ",
+        "<enter><wait>"
+      ],
+
+      "ssh_username": "{{user `user`}}",
+      "ssh_password": "{{user `password`}}",
+      "ssh_wait_timeout": "10m",
+      "shutdown_command": "sudo systemctl poweroff"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "environment_vars": [
+        "DEB_PACKAGES={{user `deb_packages`}}"
+      ],
+      "scripts": [
+        "scripts/image_u14.sh"
+      ]
+    }
+  ]
+}
