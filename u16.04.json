@@ -59,7 +59,7 @@
       "vmx_data": {
         "memSize": "8192",
         "numvcpu": "4",
-        "ethernet0.networkName": "{{ vmw_devlpoy_netname }}",
+        "ethernet0.networkName": "{{user `vmw_devlpoy_netname`}}",
         "ethernet0.virtualDev":  "vmxnet3"
       },
       "vmx_data_post": {
