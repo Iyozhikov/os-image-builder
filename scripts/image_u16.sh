@@ -6,6 +6,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 function update-packages()
 {
+  sed 's/us.archive.ubuntu.com/mirrors.aliyun.com/g' -i /etc/apt/sources.list
   apt-get update -y
   apt-get upgrade -y
   apt-get install -y ${DEB_PACKAGES}
@@ -13,4 +14,3 @@ function update-packages()
 
 # main
 update-packages
-poweroff
