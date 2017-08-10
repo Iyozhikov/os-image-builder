@@ -2,8 +2,8 @@
   "builders":
   [
     {
-      "name": "ubuntu-1604-base",
-      "vm_name": "ubuntu-16.04-x86_64-base",
+      "name": "{{user `build_name`}}",
+      "vm_name": "{{user `vm_name`}}",
       "type": "vmware-iso",
       "guest_os_type": "ubuntu-64",
       "version": "9",
