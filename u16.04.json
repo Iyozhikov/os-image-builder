@@ -55,7 +55,6 @@
       "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; echo '{{user `password`}}'|sudo -S sh 'shutdown.sh'",
       "skip_compaction": true,
       "format": "ovf",
-      "output_directory": "out-u16.04-amd64-vmware",
       "vmx_data": {
         "memSize": "8192",
         "numvcpu": "4",
