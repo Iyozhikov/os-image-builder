@@ -1,0 +1,12 @@
+{
+  "fuel9_iso": "MirantisOpenStack-9.0.iso",
+  "fuel9_iso_md5": "07461ba42d5056830dd6f203e8fe9691",
+  "iso_url": "{{env `HOME`}}/packer/{{user `fuel_iso`}}",
+  "iso_md5": "{{user `fuel9_iso_md5`}}",
+  "rpm_packages": "python-pip vim",
+  "disk_size": "82000",
+  "build_name": "4vcp",
+  "vm_name": "fuel9-{{user `build_name`}}",
+  "user": "root",
+  "password": "r00tme",
+}

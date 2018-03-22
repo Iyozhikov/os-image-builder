@@ -4,8 +4,8 @@
     "iso_md5": "88c0437f0a14c6e2c94426df9d43cd67",
     "ksfile": "config/custom.ks",
     "rpm_packages": "python-pip docker-latest ansible nginx git mc python-docker-py vim-enhanced tcpdump mlocate glusterfs glusterfs-api glusterfs-cli glusterfs-client-xlators glusterfs-fuse glusterfs-libs glusterfs-server keepalived python-gluster",
-    
-    
+
+
     "dst_iso": "/tmp/image.iso",
     "disk_size": "20480",
     "user": "mirantis",
