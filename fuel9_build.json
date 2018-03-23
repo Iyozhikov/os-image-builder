@@ -3,10 +3,25 @@
     "fuel9_iso": "MirantisOpenStack-9.0.iso",
     "fuel9_iso_md5": "07461ba42d5056830dd6f203e8fe9691",
     "rpm_packages": "python-pip vim",
+    "update2_92": "1",
     "disk_size": "82000",
-    "build_name": "4vcp",
+    "build_name": "virt-fuel",
     "user": "root",
-    "password": "r00tme"
+    "password": "r00tme",
+    "run_ssh": "inst.sshd",
+    "adm_mac": "DE:AD:BE:EF:34:47",
+    "adm_ip": "10.20.0.2",
+    "adm_mnask": "255.255.255.0",
+    "adm_gw": "",
+    "adm_host_name": "fuel.domain.tld",
+    "mgm_mac": "DE:AD:BE:EF:34:48",
+    "mgm_ip": "10.10.11.200",
+    "mgm_mnask": "255.255.255.0",
+    "mgm_gw": "10.10.11.254",
+    "mgm_host_name": "",
+    "ns_1": "114.114.114.114",
+    "ns_2": "8.8.8.8",
+    "ntp_pool": "cn.pool.ntp.org"
   },
   "builders":
   [
@@ -25,15 +40,16 @@
       "vnc_bind_address": "0.0.0.0",
       "vnc_port_min": "5990",
       "vnc_port_max": "5990",
-      "net_device": "virtio",
+      "net_device": "virtio-net-pci",
       "qemuargs":[
+        [ "-M", "pc" ],
         [ "-cpu", "host" ],
         [ "-smp", "cores=2,threads=1,sockets=1" ],
-        [ "-m", "2048M" ],
-        [ "-device", "virtio-net-pci,netdev=net0,mac=DE:AD:BE:EF:34:47,bus=pci.0,addr=0x3" ],
-        [ "-netdev", "tap,ifname=vnet-adm0,id=net0,script=scripts/qemu-ifup_br-adm0,downscript=scripts/qemu-ifdown_br-adm0" ],
-        [ "-device", "virtio-net-pci,netdev=net1,mac=DE:AD:BE:EF:34:48,bus=pci.0,addr=0x4" ],
-        [ "-netdev", "tap,ifname=vnet-mgm0,id=net1,script=scripts/qemu-ifup_br-mgm0,downscript=scripts/qemu-ifdown_br-mgm0" ],
+        [ "-m", "4096M" ],
+        [ "-device", "virtio-net-pci,netdev=net0,mac={{user `adm_mac`}},bus=pci.0,addr=0x3" ],
+        [ "-netdev", "tap,ifname=vmnet-adm0,id=net0,script=scripts/qemu-ifup_br-adm0,downscript=scripts/qemu-ifdown_br-adm0" ],
+        [ "-device", "virtio-net-pci,netdev=net1,mac={{user `mgm_mac`}},bus=pci.0,addr=0x4" ],
+        [ "-netdev", "tap,ifname=vmnet-mgm0,id=net1,script=scripts/qemu-ifup_br-mgm0,downscript=scripts/qemu-ifdown_br-mgm0" ],
         [ "-device", "virtio-net-pci,netdev=forward,mac=0A:01:02:03:04:05,bus=pci.0,addr=0x5"],
         [ "-netdev", "user,hostfwd=tcp::{{ .SSHHostPort }}-:22,id=forward"]
       ],
@@ -41,12 +57,13 @@
       "boot_command": [
         "<esc>",
         "<wait>",
-        "vmlinuz initrd=initrd.img net.ifnames=0 biosdevname=0 ",
+        "vmlinuz initrd=initrd.img net.ifnames=0 biosdevname=0 {{user `run_ssh`}} ",
         "inst.repo=cdrom:LABEL=OpenStack_Fuel:/ inst.ks=cdrom:LABEL=OpenStack_Fuel:/ks.cfg ",
-        "rd.neednet=1 nameserver=114.114.114.114 nameserver=8.8.8.8 showmenu=no forceformat=yes ",
-        "ifname=eth0:DE:AD:BE:EF:34:47 ip=10.20.0.2:::255.255.255.0:fuel.domain.tld:eth0:none ",
-        "ifname=eth1:DE:AD:BE:EF:34:48 ip=10.10.11.200::10.10.11.254:255.255.255.0::eth1:none ",
-        "<enter>"
+        "rd.neednet=1 nameserver={{user `ns_1`}} nameserver={{user `ns_2`}} showmenu=no forceformat=yes ",
+        "ifname=eth0:DE:AD:BE:EF:34:47 ip={{user `adm_ip`}}::{{user `adm_gw`}}:{{user `adm_mnask`}}:{{user `adm_host_name`}}:eth0:none ",
+        "ifname=eth1:DE:AD:BE:EF:34:48 ip={{user `mgm_ip`}}::{{user `mgm_gw`}}:{{user `mgm_mnask`}}:{{user `mgm_host_name`}}:eth1:none ",
+        "ifname=eth2:0A:01:02:03:04:05 ip=eth2:dhcp ",
+        "<enter><wait2m>"
       ],
 
       "ssh_username": "{{user `user`}}",
@@ -57,14 +74,20 @@
   ],
   "provisioners": [
     {
+      "type": "shell-local",
+      "command": "bash scripts/fuel9_local_open_ssh.sh {{user `adm_ip`}} {{user `user`}} {{user `password`}}"
+    },
+    {
       "type": "shell",
-      "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "expect_disconnect": true,
+      "execute_command": "{{.Vars}} bash '{{.Path}}'",
       "environment_vars": [
-        "GPG_UID={{user `gpg_uid`}}",
+        "UPDATE2_92={{user `update2_92`}}",
+        "NTP_POOL={{user `ntp_pool`}}",
         "RPM_PACKAGES={{user `rpm_packages`}}"
       ],
       "scripts": [
-        "scripts/image_fuel9.sh"
+        "scripts/fuel9_provision.sh"
       ]
     }
   ]

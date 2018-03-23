@@ -6,7 +6,12 @@
 PATH=$PATH:/sbin:/usr/sbin
 ip=$(which ip)
 br="$(echo "$(basename ${0})" | cut -d_ -f2)"
-
+# Check script executed via symlink with bridge name
+if [ "${br}" = "brname" ];then
+  echo "Please create symlinks with real bridge name like:
+  ln -s qemu-ifup_brname qemu-ifup_br-amd0"
+  exit 1
+fi
 if [ -n "$ip" ]; then
    ip link set "$1" up
 else
