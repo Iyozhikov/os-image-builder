@@ -71,7 +71,9 @@ $ packer build -only virtualbox-iso centos7_gluster.json
 ~~~
 
 ## MOS9 build
+
 #mos9build
+
 Build steps
 -----------
 
