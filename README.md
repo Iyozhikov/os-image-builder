@@ -5,14 +5,14 @@
 2. [Requirements](#requirements)
 3. [Configuration](#configuration)
 4. [Usage](#usage)
-5. [MOS9 build](#mos9build)
+5. [MOS9 build](#mos9-build)
 
-##Overview
+## Overview
 
 os-image-builder creates OS installation ISO image based on Ubuntu CD/CentOS 7 CD  
 for offline installation of Managed Services appliances.
 
-##Requirements
+## Requirements
 
 The image builder is known to work on Ubuntu and Mac OS X, so it is suggested to use this distribution on your build host.
 You also need to download and install the following tools:
@@ -21,7 +21,7 @@ You also need to download and install the following tools:
  * QEMU machine emulator and virtualizer for Linux
  * Virtual Box for MAC OS X
 
-##Configuration
+## Configuration
 
 Before running the image builder for the first time please generate a new key pair:
 
@@ -55,7 +55,7 @@ Open `centos7_gluster.json` in your favorite text editor and find `variables` se
  * `dst_iso`: specifies a file system path to the target ISO image
 
 
-##Usage
+## Usage
 
 
 Simply run `packer build base.json` command from the project directory and wait until it's done.
@@ -71,11 +71,6 @@ $ packer build -only virtualbox-iso centos7_gluster.json
 ~~~
 
 ## MOS9 build
-
-#mos9build
-
-Build steps
------------
 
 1. Install packer from packer.io
    ```
